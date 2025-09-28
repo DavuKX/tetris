@@ -1,5 +1,6 @@
 from block_builder import BlockBuilder
 from block_director import BlockDirector
+from block_renderer import BlockRenderer
 from grid import Grid
 from blocks import *
 import random
@@ -13,6 +14,7 @@ class Game:
         self.next_block = self.get_random_block()
         self.game_over = False
         self.score = 0
+        self.block_renderer = BlockRenderer()
 
     def get_random_block(self):
         constructor = random.choice(self.constructors)
@@ -42,8 +44,8 @@ class Game:
 
     def draw(self, screen):
         self.grid.draw(screen)
-        self.current_block.draw(screen, 11, 11)
-        self.next_block.draw(screen, 270, 270)
+        self.block_renderer.draw(screen, self.current_block, 11, 11)
+        self.block_renderer.draw(screen, self.next_block, 270, 270)
 
     def move_left(self):
         self.current_block.move(0, -1)
