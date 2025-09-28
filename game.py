@@ -1,3 +1,5 @@
+from block_builder import BlockBuilder
+from block_director import BlockDirector
 from grid import Grid
 from blocks import *
 import random
@@ -6,19 +8,37 @@ import random
 class Game:
     def __init__(self):
         self.grid = Grid()
-        self.blocks = [IBlock(), JBlock(), LBlock(), OBlock(), SBlock(), TBlock(), ZBlock()]
+        self.constructors = self.get_constructors()
         self.current_block = self.get_random_block()
         self.next_block = self.get_random_block()
         self.game_over = False
         self.score = 0
 
     def get_random_block(self):
-        if len(self.blocks) == 0:
-            self.blocks = [IBlock(), JBlock(), LBlock(), OBlock(), SBlock(), TBlock(), ZBlock()]
+        constructor = random.choice(self.constructors)
+        block = constructor()
 
-        block = random.choice(self.blocks)
-        self.blocks.remove(block)
+        self.constructors.remove(constructor)
+
+        if not self.constructors:
+            self.constructors = self.get_constructors()
+
         return block
+
+    def get_constructors(self):
+        director = BlockDirector(BlockBuilder())
+
+        constructors = [
+            director.create_i_block,
+            director.create_j_block,
+            director.create_l_block,
+            director.create_o_block,
+            director.create_s_block,
+            director.create_t_block,
+            director.create_z_block
+        ]
+
+        return constructors
 
     def draw(self, screen):
         self.grid.draw(screen)
@@ -76,7 +96,7 @@ class Game:
 
     def reset(self):
         self.grid.reset()
-        self.blocks = [IBlock(), JBlock(), LBlock(), OBlock(), SBlock(), TBlock(), ZBlock()]
+        self.constructors = self.get_constructors()
         self.current_block = self.get_random_block()
         self.next_block = self.get_random_block()
         self.score = 0
