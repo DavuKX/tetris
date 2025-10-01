@@ -1,18 +1,22 @@
 from block_factory import BlockFactory
 from block_renderer import Renderer
+from game_state import GameState, PlayingState, GameOverState, GameStatus
 from grid import Grid
 from scoring_manager import GameScoreManager
 
 
 class Game:
-    def __init__(self, block_factory: BlockFactory, renderer: Renderer):
+    def __init__(self, block_factory: BlockFactory, renderer: Renderer, state: GameState = PlayingState()):
         self.grid = Grid()
         self.block_factory = block_factory
         self.current_block = self.block_factory.create_random_block()
         self.next_block = self.block_factory.create_random_block()
-        self.game_over = False
+        
+        self.status = GameStatus.PLAYING
         self.block_renderer = renderer
         self.score_manager = GameScoreManager()
+
+        self._state = state
 
     def draw(self, screen):
         self.block_renderer.draw_grid(screen, self.grid)
@@ -20,17 +24,13 @@ class Game:
         self.block_renderer.draw_block(screen, self.next_block, 270, 270)
 
     def move_left(self):
-        self._attempt_move(0, -1)
+        self._state.move_left(self)
 
     def move_right(self):
-        self._attempt_move(0, 1)
+        self._state.move_right(self)
 
     def move_down(self):
-        self.current_block.move(1, 0)
-        
-        if not self._is_valid_position():
-            self.current_block.move(-1, 0)
-            self.lock_block()
+        self._state.move_down(self)
 
     def lock_block(self):
         tiles = self.current_block.get_cell_positions()
@@ -44,7 +44,8 @@ class Game:
         self.score_manager.update_score(rows_cleared, 0)
 
         if not self.block_fits():
-            self.game_over = True
+            self.status = GameStatus.GAME_OVER
+            self._state = GameOverState()
 
     def block_inside(self):
         tiles = self.current_block.get_cell_positions()
@@ -54,9 +55,7 @@ class Game:
         return True
 
     def rotate(self):
-        self.current_block.rotate()
-        if not self._is_valid_position():
-            self.current_block.undo_rotation()
+        self._state.rotate(self)
 
     def block_fits(self):
         tiles = self.current_block.get_cell_positions()
@@ -71,19 +70,21 @@ class Game:
         self.current_block = self.block_factory.create_random_block()
         self.next_block = self.block_factory.create_random_block()
         self.score_manager.reset_score()
+        self.status = GameStatus.PLAYING
+        self._state = PlayingState()
 
     def update_score(self, lines_clear, move_down_points):
         self.score_manager.update_score(lines_clear, move_down_points)
     
-    def _is_valid_position(self):
+    def is_valid_position(self):
         return self.block_inside() and self.block_fits()
 
     def _attempt_move(self, row_offset, col_offset):
         self.current_block.move(row_offset, col_offset)
 
-        if not self._is_valid_position():
+        if not self.is_valid_position():
             self.current_block.move(-row_offset, -col_offset)
-    
+
     @property
     def score(self):
         return self.score_manager.score

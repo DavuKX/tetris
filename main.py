@@ -3,6 +3,7 @@ import pygame
 from block_factory import RandomBagBlockFactory, TrueRandomBlockFactory
 from block_renderer import BlockRenderer
 from game import Game
+from game_state import GameStatus
 from colors import Colors
 
 dark_blue = (44, 44, 127)
@@ -34,19 +35,19 @@ while True:
             sys.exit()
 
         if event.type == pygame.KEYDOWN:
-            if game.game_over:
-                game.game_over = False
+            if game.status == GameStatus.GAME_OVER:
                 game.reset()
-            if event.key == pygame.K_LEFT and not game.game_over:
-                game.move_left()
-            if event.key == pygame.K_RIGHT and not game.game_over:
-                game.move_right()
-            if event.key == pygame.K_DOWN and not game.game_over:
-                game.move_down()
-                game.update_score(0, 1)
-            if event.key == pygame.K_UP and not game.game_over:
-                game.rotate()
-        if event.type == GAME_UPDATE and not game.game_over:
+            elif game.status == GameStatus.PLAYING:
+                if event.key == pygame.K_LEFT:
+                    game.move_left()
+                elif event.key == pygame.K_RIGHT:
+                    game.move_right()
+                elif event.key == pygame.K_DOWN:
+                    game.move_down()
+                    game.update_score(0, 1)
+                elif event.key == pygame.K_UP:
+                    game.rotate()
+        if event.type == GAME_UPDATE and game.status == GameStatus.PLAYING:
             game.move_down()
 
     score_value_surface = title_font.render(str(game.score), True, Colors.white)
@@ -55,7 +56,7 @@ while True:
     screen.blit(score_surface, (365, 20, 50, 50))
     screen.blit(next_surface, (375, 180, 50, 50))
 
-    if game.game_over:
+    if game.status == GameStatus.GAME_OVER:
         screen.blit(game_over_surface, (320, 450, 50, 50))
 
     pygame.draw.rect(screen, Colors.light_blue, score_rect, 0, 10)
