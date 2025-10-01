@@ -1,6 +1,7 @@
 import sys
 import pygame
 from block_factory import RandomBagBlockFactory, TrueRandomBlockFactory
+from block_renderer import BlockRenderer
 from game import Game
 from colors import Colors
 
@@ -18,7 +19,10 @@ pygame.display.set_caption("Tetris")
 
 clock = pygame.time.Clock()
 
-game = Game(TrueRandomBlockFactory())
+block_factory = TrueRandomBlockFactory()
+renderer = BlockRenderer()
+
+game = Game(block_factory, renderer)
 
 GAME_UPDATE = pygame.USEREVENT
 pygame.time.set_timer(GAME_UPDATE, 300)
