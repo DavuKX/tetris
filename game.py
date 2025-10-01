@@ -1,46 +1,16 @@
-from block_builder import BlockBuilder
-from block_director import BlockDirector
 from block_renderer import BlockRenderer
 from grid import Grid
-from blocks import *
-import random
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, block_factory):
         self.grid = Grid()
-        self.constructors = self.get_constructors()
-        self.current_block = self.get_random_block()
-        self.next_block = self.get_random_block()
+        self.block_factory = block_factory
+        self.current_block = self.block_factory.create_random_block()
+        self.next_block = self.block_factory.create_random_block()
         self.game_over = False
         self.score = 0
         self.block_renderer = BlockRenderer()
-
-    def get_random_block(self):
-        constructor = random.choice(self.constructors)
-        block = constructor()
-
-        self.constructors.remove(constructor)
-
-        if not self.constructors:
-            self.constructors = self.get_constructors()
-
-        return block
-
-    def get_constructors(self):
-        director = BlockDirector(BlockBuilder())
-
-        constructors = [
-            director.create_i_block,
-            director.create_j_block,
-            director.create_l_block,
-            director.create_o_block,
-            director.create_s_block,
-            director.create_t_block,
-            director.create_z_block
-        ]
-
-        return constructors
 
     def draw(self, screen):
         self.grid.draw(screen)
@@ -70,7 +40,7 @@ class Game:
             self.grid.grid[position.row][position.column] = self.current_block.block_id
 
         self.current_block = self.next_block
-        self.next_block = self.get_random_block()
+        self.next_block = self.block_factory.create_random_block()
         rows_cleared = self.grid.clear_full_rows()
         self.update_score(rows_cleared, 0)
 
@@ -98,9 +68,9 @@ class Game:
 
     def reset(self):
         self.grid.reset()
-        self.constructors = self.get_constructors()
-        self.current_block = self.get_random_block()
-        self.next_block = self.get_random_block()
+        self.block_factory.reset_bag()
+        self.current_block = self.block_factory.create_random_block()
+        self.next_block = self.block_factory.create_random_block()
         self.score = 0
 
     def update_score(self, lines_clear, move_down_points):
