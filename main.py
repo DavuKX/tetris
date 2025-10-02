@@ -3,95 +3,58 @@ import pygame
 from block_factory import RandomBagBlockFactory, TrueRandomBlockFactory
 from block_renderer import BlockRenderer
 from game import Game
-from game_state import GameStatus
-from colors import Colors
 from score_observer import ScoreDatabaseObserver
+from ui_config import UIConfig
+from ui_renderer import UIRenderer
+from event_handler import EventHandler
 
-dark_blue = (44, 44, 127)
-pygame.init()
-title_font = pygame.font.Font(None, 40)
-small_font = pygame.font.Font(None, 25)
 
-score_surface = title_font.render("Score", True, Colors.white)
-score_rect = pygame.Rect(320, 55, 170, 60)
+def initialize_pygame():
+    pygame.init()
+    screen = pygame.display.set_mode((UIConfig.SCREEN_WIDTH, UIConfig.SCREEN_HEIGHT))
+    pygame.display.set_caption("Tetris")
+    clock = pygame.time.Clock()
+    return screen, clock
 
-next_surface = title_font.render("Next", True, Colors.white)
-next_rect = pygame.Rect(320, 215, 170, 180)
 
-high_scores_surface = title_font.render("Scores", True, Colors.white)
-high_scores_rect = pygame.Rect(320, 445, 170, 150)
-
-game_over_surface = title_font.render("GAME OVER", True, Colors.white)
-
-screen = pygame.display.set_mode((500, 620))
-pygame.display.set_caption("Tetris")
-
-clock = pygame.time.Clock()
-
-block_factory = TrueRandomBlockFactory()
-renderer = BlockRenderer()
-
-game = Game(block_factory, renderer)
-
-score_observer = ScoreDatabaseObserver()
-game.attach_observer(score_observer)
-
-GAME_UPDATE = pygame.USEREVENT
-pygame.time.set_timer(GAME_UPDATE, 300)
-
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-        if event.type == pygame.KEYDOWN:
-            if game.status == GameStatus.GAME_OVER:
-                game.reset()
-            elif game.status == GameStatus.PLAYING:
-                if event.key == pygame.K_LEFT:
-                    game.move_left()
-                elif event.key == pygame.K_RIGHT:
-                    game.move_right()
-                elif event.key == pygame.K_DOWN:
-                    game.move_down()
-                    game.update_score(0, 1)
-                elif event.key == pygame.K_UP:
-                    game.rotate()
-        if event.type == GAME_UPDATE and game.status == GameStatus.PLAYING:
-            game.move_down()
-
-    score_value_surface = title_font.render(str(game.score), True, Colors.white)
+def create_game():
+    block_factory = RandomBagBlockFactory()
+    # block_factory = TrueRandomBlockFactory()
+    renderer = BlockRenderer()
+    game = Game(block_factory, renderer)
     
-    high_scores = score_observer.get_high_scores(3)
-
-    screen.fill(Colors.dark_blue)
-    screen.blit(score_surface, (365, 20, 50, 50))
-    screen.blit(next_surface, (375, 180, 50, 50))
-    screen.blit(high_scores_surface, (355, 410, 50, 50))
-
-    if game.status == GameStatus.GAME_OVER:
-        screen.blit(game_over_surface, (320, 450, 50, 50))
-
-    pygame.draw.rect(screen, Colors.light_blue, score_rect, 0, 10)
-    screen.blit(score_value_surface,
-                score_value_surface.get_rect(centerx=score_rect.centerx, centery=score_rect.centery))
-    pygame.draw.rect(screen, Colors.light_blue, next_rect, 0, 10)
+    score_observer = ScoreDatabaseObserver()
+    game.attach_observer(score_observer)
     
-    pygame.draw.rect(screen, Colors.light_blue, high_scores_rect, 0, 10)
-    
-    y_offset = 460
-    for i, (score, date) in enumerate(high_scores, 1):
-        score_text = small_font.render(f"{i}. {score}", True, Colors.white)
-        screen.blit(score_text, (335, y_offset))
-        y_offset += 30
-    
-    for i in range(len(high_scores), 3):
-        score_text = small_font.render(f"{i+1}. ---", True, Colors.white)
-        screen.blit(score_text, (335, y_offset))
-        y_offset += 30
-    
-    game.draw(screen)
+    return game, score_observer
 
-    pygame.display.update()
-    clock.tick(60)
+
+def setup_game_timer():
+    GAME_UPDATE = pygame.USEREVENT
+    pygame.time.set_timer(GAME_UPDATE, UIConfig.GAME_UPDATE_INTERVAL)
+    return GAME_UPDATE
+
+
+def main():
+    screen, clock = initialize_pygame()
+    game, score_observer = create_game()
+    setup_game_timer()
+    
+    ui_renderer = UIRenderer(screen)
+    event_handler = EventHandler(game)
+    
+    running = True
+    while running:
+        running = event_handler.handle_events()
+        
+        ui_renderer.render(game, score_observer)
+        
+        pygame.display.update()
+        clock.tick(UIConfig.FPS)
+    
+    pygame.quit()
+    sys.exit()
+
+
+if __name__ == "__main__":
+    main()
