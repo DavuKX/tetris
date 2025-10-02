@@ -11,12 +11,16 @@ dark_blue = (44, 44, 127)
 pygame.init()
 title_font = pygame.font.Font(None, 40)
 small_font = pygame.font.Font(None, 25)
+
 score_surface = title_font.render("Score", True, Colors.white)
 score_rect = pygame.Rect(320, 55, 170, 60)
+
 next_surface = title_font.render("Next", True, Colors.white)
 next_rect = pygame.Rect(320, 215, 170, 180)
-high_scores_surface = small_font.render("High Scores", True, Colors.white)
-high_scores_rect = pygame.Rect(320, 420, 170, 180)
+
+high_scores_surface = title_font.render("Scores", True, Colors.white)
+high_scores_rect = pygame.Rect(320, 445, 170, 150)
+
 game_over_surface = title_font.render("GAME OVER", True, Colors.white)
 
 screen = pygame.display.set_mode((500, 620))
@@ -64,6 +68,7 @@ while True:
     screen.fill(Colors.dark_blue)
     screen.blit(score_surface, (365, 20, 50, 50))
     screen.blit(next_surface, (375, 180, 50, 50))
+    screen.blit(high_scores_surface, (355, 410, 50, 50))
 
     if game.status == GameStatus.GAME_OVER:
         screen.blit(game_over_surface, (320, 450, 50, 50))
@@ -74,9 +79,8 @@ while True:
     pygame.draw.rect(screen, Colors.light_blue, next_rect, 0, 10)
     
     pygame.draw.rect(screen, Colors.light_blue, high_scores_rect, 0, 10)
-    screen.blit(high_scores_surface, (330, 425, 50, 50))
     
-    y_offset = 455
+    y_offset = 460
     for i, (score, date) in enumerate(high_scores, 1):
         score_text = small_font.render(f"{i}. {score}", True, Colors.white)
         screen.blit(score_text, (335, y_offset))
