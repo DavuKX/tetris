@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime
 from typing import List, Tuple
 
-DEFAULT_DB_PATH = "tetris_scores.db"
+DEFAULT_DB_PATH = "data/tetris_scores.db"
 
 class GameObserver(ABC):
     @abstractmethod

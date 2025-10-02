@@ -1,7 +1,7 @@
 import random
 from abc import ABC, abstractmethod
-from block_builder import BlockBuilder
-from block_director import BlockDirector
+from src.blocks.block_builder import BlockBuilder
+from src.blocks.block_director import BlockDirector
 
 
 class BlockFactory(ABC):

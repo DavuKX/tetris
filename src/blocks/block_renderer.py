@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import pygame
 
-from colors import Colors
+from src.ui.colors import Colors
 
 class Renderer(ABC):
     @abstractmethod

@@ -1,4 +1,4 @@
-from position import Position
+from src.core.position import Position
 
 
 class BlockDirector:

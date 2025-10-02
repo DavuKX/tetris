@@ -1,12 +1,12 @@
 import sys
 import pygame
-from block_factory import RandomBagBlockFactory, TrueRandomBlockFactory
-from block_renderer import BlockRenderer
-from game import Game
-from score_observer import ScoreDatabaseObserver
-from ui_config import UIConfig
-from ui_renderer import UIRenderer
-from event_handler import EventHandler
+from src.blocks.block_factory import RandomBagBlockFactory, TrueRandomBlockFactory
+from src.blocks.block_renderer import BlockRenderer
+from src.core.game import Game
+from src.observers.score_observer import ScoreDatabaseObserver
+from src.ui.ui_config import UIConfig
+from src.ui.ui_renderer import UIRenderer
+from src.ui.event_handler import EventHandler
 
 
 def initialize_pygame():

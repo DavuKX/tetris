@@ -1,8 +1,8 @@
 """Event handling for the Tetris game."""
 import pygame
 import sys
-from game import Game
-from game_state import GameStatus
+from src.core.game import Game
+from src.core.game_state import GameStatus
 
 
 class EventHandler:

@@ -1,8 +1,8 @@
-from block_factory import BlockFactory
-from block_renderer import Renderer
-from game_state import GameState, PlayingState, GameOverState, GameStatus
-from grid import Grid
-from scoring_manager import GameScoreManager
+from src.blocks.block_factory import BlockFactory
+from src.blocks.block_renderer import Renderer
+from src.core.game_state import GameState, PlayingState, GameOverState, GameStatus
+from src.core.grid import Grid
+from src.core.scoring_manager import GameScoreManager
 from typing import List
 
 

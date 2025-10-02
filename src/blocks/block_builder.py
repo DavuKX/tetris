@@ -1,5 +1,5 @@
-from colors import Colors
-from block import Block
+from src.ui.colors import Colors
+from src.blocks.block import Block
 
 
 class BlockBuilder:
