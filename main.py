@@ -5,14 +5,18 @@ from block_renderer import BlockRenderer
 from game import Game
 from game_state import GameStatus
 from colors import Colors
+from score_observer import ScoreDatabaseObserver
 
 dark_blue = (44, 44, 127)
 pygame.init()
 title_font = pygame.font.Font(None, 40)
+small_font = pygame.font.Font(None, 25)
 score_surface = title_font.render("Score", True, Colors.white)
 score_rect = pygame.Rect(320, 55, 170, 60)
 next_surface = title_font.render("Next", True, Colors.white)
 next_rect = pygame.Rect(320, 215, 170, 180)
+high_scores_surface = small_font.render("High Scores", True, Colors.white)
+high_scores_rect = pygame.Rect(320, 420, 170, 180)
 game_over_surface = title_font.render("GAME OVER", True, Colors.white)
 
 screen = pygame.display.set_mode((500, 620))
@@ -24,6 +28,9 @@ block_factory = TrueRandomBlockFactory()
 renderer = BlockRenderer()
 
 game = Game(block_factory, renderer)
+
+score_observer = ScoreDatabaseObserver()
+game.attach_observer(score_observer)
 
 GAME_UPDATE = pygame.USEREVENT
 pygame.time.set_timer(GAME_UPDATE, 300)
@@ -51,6 +58,8 @@ while True:
             game.move_down()
 
     score_value_surface = title_font.render(str(game.score), True, Colors.white)
+    
+    high_scores = score_observer.get_high_scores(3)
 
     screen.fill(Colors.dark_blue)
     screen.blit(score_surface, (365, 20, 50, 50))
@@ -63,6 +72,21 @@ while True:
     screen.blit(score_value_surface,
                 score_value_surface.get_rect(centerx=score_rect.centerx, centery=score_rect.centery))
     pygame.draw.rect(screen, Colors.light_blue, next_rect, 0, 10)
+    
+    pygame.draw.rect(screen, Colors.light_blue, high_scores_rect, 0, 10)
+    screen.blit(high_scores_surface, (330, 425, 50, 50))
+    
+    y_offset = 455
+    for i, (score, date) in enumerate(high_scores, 1):
+        score_text = small_font.render(f"{i}. {score}", True, Colors.white)
+        screen.blit(score_text, (335, y_offset))
+        y_offset += 30
+    
+    for i in range(len(high_scores), 3):
+        score_text = small_font.render(f"{i+1}. ---", True, Colors.white)
+        screen.blit(score_text, (335, y_offset))
+        y_offset += 30
+    
     game.draw(screen)
 
     pygame.display.update()

@@ -3,6 +3,7 @@ from block_renderer import Renderer
 from game_state import GameState, PlayingState, GameOverState, GameStatus
 from grid import Grid
 from scoring_manager import GameScoreManager
+from typing import List
 
 
 class Game:
@@ -17,6 +18,7 @@ class Game:
         self.score_manager = GameScoreManager()
 
         self._state = state
+        self._observers = []  # List of observers
 
     def draw(self, screen):
         self.block_renderer.draw_grid(screen, self.grid)
@@ -46,6 +48,7 @@ class Game:
         if not self.block_fits():
             self.status = GameStatus.GAME_OVER
             self._state = GameOverState()
+            self._notify_game_over()  # Notify observers
 
     def block_inside(self):
         tiles = self.current_block.get_cell_positions()
@@ -88,3 +91,13 @@ class Game:
     @property
     def score(self):
         return self.score_manager.score
+    
+    def attach_observer(self, observer):
+        self._observers.append(observer)
+    
+    def detach_observer(self, observer):
+        self._observers.remove(observer)
+    
+    def _notify_game_over(self):
+        for observer in self._observers:
+            observer.on_game_over(self.score)
