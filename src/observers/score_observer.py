@@ -70,9 +70,8 @@ class ScoreDatabaseObserver(GameObserver):
         self.database = ScoreDatabase(db_path)
     
     def on_game_over(self, final_score: int):
-        if final_score > 0:  # Only save if score is greater than 0
+        if final_score > 0: 
             self.database.save_score(final_score)
-            print(f"Score {final_score} saved to database!")
     
     def get_high_scores(self, limit: int = 3) -> List[Tuple[int, str]]:
         return self.database.get_top_scores(limit)

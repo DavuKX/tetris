@@ -30,9 +30,9 @@ class UIConfig:
     HIGH_SCORES_TEXT_X = 335
     HIGH_SCORES_COUNT = 3
     
-    # Game over
-    GAME_OVER_X = 320
-    GAME_OVER_Y = 450
+    # Game over (between Score and Next sections)
+    GAME_OVER_X = 325
+    GAME_OVER_Y = 135
     
     # Fonts
     TITLE_FONT_SIZE = 40
