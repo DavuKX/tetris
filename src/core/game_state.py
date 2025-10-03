@@ -33,10 +33,10 @@ class PlayingState(GameState):
            game.lock_block()
 
     def move_left(self, game):
-        game._attempt_move(0, -1)
+        game.attempt_move(0, -1)
 
     def move_right(self, game):
-        game._attempt_move(0, 1)
+        game.attempt_move(0, 1)
 
     def rotate(self, game):
         game.current_block.rotate()

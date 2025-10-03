@@ -82,7 +82,7 @@ class Game:
     def is_valid_position(self):
         return self.block_inside() and self.block_fits()
 
-    def _attempt_move(self, row_offset, col_offset):
+    def attempt_move(self, row_offset, col_offset):
         self.current_block.move(row_offset, col_offset)
 
         if not self.is_valid_position():
